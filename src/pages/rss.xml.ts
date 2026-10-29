@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ site: origin }) => {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escape(site.name)}</title>
-    <link>${absoluteUrl(url(), origin)}</link>
+    <link>${absoluteUrl(url('articles/'), origin)}</link>
     <description>${escape(site.description)}</description>
     <language>en</language>
     <atom:link href="${absoluteUrl(url('rss.xml'), origin)}" rel="self" type="application/rss+xml" />${items.join('')}

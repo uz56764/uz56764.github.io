@@ -6,7 +6,7 @@ export const GET: APIRoute = async ({ site }) => {
   const posts = await getPosts();
   const pages: { path: string; modified?: Date }[] = [
     { path: url() },
-    { path: url('about/') },
+    { path: url('articles/') },
     ...posts.map(post => ({ path: postUrl(post), modified: post.data.updated ?? post.data.date })),
   ];
   const entries = pages.map(({ path, modified }) =>

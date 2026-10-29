@@ -4,8 +4,8 @@ import Wordmark from './Wordmark.astro';
 import { site, url } from '../lib/site';
 
 const links = [
-  { label: 'Articles', href: url(), external: false },
-  { label: 'About Me', href: url('about/'), external: false },
+  { label: 'About Me', href: url(), external: false },
+  { label: 'Articles', href: url('articles/'), external: false },
   { label: 'RSS', href: url('rss.xml'), external: false },
   ...site.links.map(link => ({ ...link, external: true })),
 ];

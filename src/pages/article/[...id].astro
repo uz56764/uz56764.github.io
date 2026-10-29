@@ -31,7 +31,7 @@ const minutes = readingMinutes(post);
 const socialImage = cover ? (await getImage({ src: cover, width: Math.min(1200, cover.width), format: 'jpg', quality: 85 })).src : undefined;
 
 const facts: InfoRow[] = [
-  { label: 'Author', value: site.fullName, note: `@${site.author}`, href: url('about/') },
+  { label: 'Author', value: site.fullName, note: `@${site.author}`, href: url() },
   { label: 'Published', value: formatDate(date) },
   { label: 'Reading', value: `${minutes} min` },
   ...(tags.length ? [{ label: 'Tags', value: tags.join(', ') }] : []),
@@ -48,7 +48,7 @@ const schema = {
   keywords: tags.join(', '),
   url: absoluteUrl(postUrl(post), Astro.site),
   image: socialImage ? absoluteUrl(socialImage, Astro.site) : undefined,
-  author: { '@type': 'Person', name: site.fullName, alternateName: site.author, url: absoluteUrl(url('about/'), Astro.site) },
+  author: { '@type': 'Person', name: site.fullName, alternateName: site.author, url: absoluteUrl(url(), Astro.site) },
 };
 ---
 
@@ -62,7 +62,7 @@ const schema = {
   progress
 >
   <header class="shell article-header">
-    <a class="back-link" href={url()}>
+    <a class="back-link" href={url('articles/')}>
       <Icon name="arrow-left" size={14} />
       All articles
     </a>

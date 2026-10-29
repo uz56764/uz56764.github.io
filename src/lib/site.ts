@@ -10,7 +10,7 @@ export const site = {
   links: [] as { label: string; href: string }[],
 };
 
-/** Path under the configured base, e.g. `url('about/')` → `/repo/about/`. */
+/** Path under the configured base, e.g. `url('articles/')` → `/repo/articles/`. */
 export function url(path = '') {
   return `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${path.replace(/^\//, '')}`;
 }
