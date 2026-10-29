@@ -54,7 +54,7 @@ export const profile = {
   summary:
     'I research vulnerabilities in system software and large-scale infrastructure — browsers, kernels, hypervisors, cloud platforms, and databases.',
   introduction: [
-    'I research vulnerabilities in system software such as browsers and hypervisors. In Google Chrome, I have reported two full-chain exploits that include a browser sandbox escape, one of which earned a $250,000 bug bounty. In Linux KVM, I found a guest-to-host VM escape (CVE-2026-99082) and submitted it to kvmCTF. I have also found multiple remote code execution bugs in Cloudflare Workers and MongoDB, and ranked #1 on the 2026 HackerOne Korea leaderboard.',
+    'I research vulnerabilities in system software. In Google Chrome, I have reported two full-chain exploits that include a browser sandbox escape, one of which earned a $250,000 bug bounty. In Linux KVM, I found a guest-to-host VM escape (CVE-2026-99082) and submitted it to kvmCTF. I have also found multiple remote code execution bugs in Cloudflare Workers and MongoDB, and ranked #1 on the 2026 HackerOne Korea leaderboard.',
     'I started with CTFs in high school and have reached the DEF CON CTF finals three times. I am currently studying at the KAIST School of Computing. I am interested in both AI for security research and the security of AI systems.',
   ],
   experience: [
