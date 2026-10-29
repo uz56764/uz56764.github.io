@@ -269,21 +269,10 @@ const linkLabel = (href: string) => {
       letter-spacing: 0;
     }
 
-    .reward,
-    .target-reward .reward,
-    .highlight .reward:not(.unset) {
-      font-size: 11px;
-      letter-spacing: 0;
-    }
-
-    /* An amount not yet set has nothing to say on paper. */
-    .reward.unset {
+    /* Bounty amounts stay on the web page only. */
+    .target-reward,
+    .reward {
       display: none;
-    }
-
-    .reward-label {
-      font-size: 8.5px;
-      letter-spacing: 0.06em;
     }
 
     .finding-link :global(svg) {
