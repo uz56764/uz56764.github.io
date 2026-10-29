@@ -421,6 +421,9 @@ kbd {
 
   body {
     background: #fff;
+    /* Chromium otherwise rounds glyph advances to whole pixels at print
+       sizes, which opens gaps such as "sof tware". */
+    text-rendering: geometricPrecision;
   }
 
   .skip-link,
