@@ -88,6 +88,7 @@ export const profile = {
           title: 'Browser Sandbox Escape',
           links: [
             'https://issuetracker.google.com/issues/559115426',
+            'https://issues.chromium.org/issues/572288856',
             'https://issuetracker.google.com/issues/572401251',
             'https://issuetracker.google.com/issues/573174984',
           ],
