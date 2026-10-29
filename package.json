@@ -1,0 +1,25 @@
+{
+  "name": "uz56764.github.io",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0 --port 4321",
+    "build:proxy": "PUBLIC_BASE_PATH=/absproxy/4321/ astro build --outDir dist-proxy",
+    "preview:proxy": "npm run build:proxy && PUBLIC_BASE_PATH=/absproxy/4321/ astro preview --outDir dist-proxy --host 0.0.0.0 --port 4321",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "7.4.2",
+    "@astrojs/markdown-remark": "7.3.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.6",
+    "typescript": "5.9.3"
+  }
+}

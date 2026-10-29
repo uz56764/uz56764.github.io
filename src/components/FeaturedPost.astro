@@ -1,0 +1,157 @@
+---
+import Icon from './Icon.astro';
+import PostCover from './PostCover.astro';
+import { postUrl, readingMinutes, type Post } from '../lib/posts';
+import { displayTitle, formatDate } from '../lib/site';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, category, date, tags, featured, cover } = post.data;
+---
+
+<section class="shell featured" aria-labelledby="featured-label">
+  <h2 class="eyebrow" id="featured-label">{featured ? 'Featured' : 'Latest'}</h2>
+
+  <article class:list={['featured-card', { 'has-cover': cover }]}>
+    <div class="featured-body">
+      <div class="meta">
+        <span class="category">{category}</span>
+        <time datetime={date.toISOString()}>{formatDate(date, 'short')}</time>
+        <span>{readingMinutes(post)} min read</span>
+      </div>
+      <h3 class="featured-title">
+        <a class="stretched-link" href={postUrl(post)}>{displayTitle(title)}</a>
+      </h3>
+      <p class="featured-excerpt">{description}</p>
+      <div class="featured-footer">
+        {tags.length > 0 && (
+          <ul class="chip-list" role="list" aria-label="Tags">
+            {tags.map(tag => <li class="chip">{tag}</li>)}
+          </ul>
+        )}
+        <span class="featured-cta" aria-hidden="true">Read article <Icon name="arrow-right" size={17} /></span>
+      </div>
+    </div>
+    <PostCover post={post} sizes="(min-width: 1080px) 560px, (min-width: 860px) 46vw, 100vw" priority />
+  </article>
+</section>
+
+<style>
+  .featured {
+    padding-top: clamp(48px, 6vw, 72px);
+  }
+
+  .featured-card {
+    position: relative;
+    display: grid;
+    margin-top: 16px;
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+    transition: border-color 0.2s;
+  }
+
+  .featured-card.has-cover {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .featured-card:hover {
+    border-color: #3b4045;
+  }
+
+  /* The text sets the card height; the cover fills whatever space it gets. */
+  .featured-card :global(.post-cover) {
+    min-height: 280px;
+    border-left: 1px solid var(--line);
+  }
+
+  .featured-card :global(.post-cover img) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .featured-card:hover :global(.post-cover img) {
+    transform: scale(1.02);
+  }
+
+  .featured-card:has(a:focus-visible) {
+    outline: 2px solid var(--lime);
+    outline-offset: 4px;
+  }
+
+  .featured-card a:focus-visible {
+    outline: none;
+  }
+
+  .featured-body {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(24px, 3vw, 40px);
+  }
+
+  .featured-title {
+    margin-top: 20px;
+    font-size: clamp(28px, 2.8vw, 38px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .featured-excerpt {
+    max-width: 52ch;
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .featured-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-top: auto;
+    padding-top: 32px;
+  }
+
+  .featured-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .featured-cta :global(svg) {
+    color: var(--lime);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .featured-card:hover .featured-cta :global(svg) {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 860px) {
+    .featured-card.has-cover {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-card :global(.post-cover) {
+      order: -1;
+      min-height: 0;
+      aspect-ratio: 16 / 10;
+      border-left: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .featured-body {
+      padding: 22px 20px 24px;
+    }
+  }
+</style>

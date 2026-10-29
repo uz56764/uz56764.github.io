@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/site';
+---
+
+<Base title="Page not found">
+  <section class="shell not-found" aria-labelledby="not-found-title">
+    <p class="eyebrow">Address not mapped</p>
+    <h1 class="display" id="not-found-title">404</h1>
+    <h2 class="not-found-heading">There’s nothing at this address.</h2>
+    <p class="lede">The page may have moved, or the link may be mistyped.</p>
+    <div class="actions">
+      <a class="button button-primary" href={url()}>
+        <Icon name="arrow-left" size={16} />
+        Back to articles
+      </a>
+      <button class="button" type="button" data-search-open>
+        <Icon name="search" size={16} />
+        Search
+      </button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    padding-top: clamp(64px, 10vw, 136px);
+  }
+
+  .display {
+    margin-top: 20px;
+    color: var(--lime);
+    font-size: clamp(96px, 14vw, 168px);
+  }
+
+  .not-found-heading {
+    margin-top: 28px;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .lede {
+    margin-top: 10px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+</style>

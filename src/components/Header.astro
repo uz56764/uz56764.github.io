@@ -1,0 +1,173 @@
+---
+import Icon from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import { url } from '../lib/site';
+
+export type Section = 'articles' | 'about';
+
+interface Props {
+  current?: Section;
+  /** Show the reading-progress line along the header's top edge. */
+  progress?: boolean;
+}
+
+const { current, progress = false } = Astro.props;
+
+const links: { key: Section; label: string; href: string }[] = [
+  { key: 'articles', label: 'Articles', href: url() },
+  { key: 'about', label: 'About Me', href: url('about/') },
+];
+---
+
+<header class="site-header">
+  {progress && <div class="reading-progress" data-reading-progress aria-hidden="true" />}
+  <div class="shell header-inner">
+    <Wordmark />
+    <nav class="nav" aria-label="Main">
+      {links.map(link => (
+        <a class="nav-link" href={link.href} aria-current={link.key === current ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    <button class="search-button" type="button" data-search-open aria-haspopup="dialog">
+      <Icon name="search" size={15} />
+      <span class="search-button-label">Search</span>
+      <kbd>/</kbd>
+      <span class="sr-only">articles</span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--line);
+    background: rgb(5 6 7 / 0.82);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: stretch;
+    gap: 40px;
+    height: 100%;
+  }
+
+  .header-inner > :global(.wordmark) {
+    align-self: center;
+  }
+
+  .nav {
+    display: flex;
+    gap: 32px;
+    margin-left: auto;
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font: 400 13px/1 var(--font-mono);
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: var(--text);
+  }
+
+  .nav-link[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--lime);
+  }
+
+  .search-button {
+    display: inline-flex;
+    align-self: center;
+    align-items: center;
+    gap: 10px;
+    width: 188px;
+    height: 34px;
+    padding: 0 6px 0 11px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    font: 400 13px/1 var(--font-mono);
+    color: var(--faint);
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .search-button:hover {
+    border-color: var(--muted);
+    color: var(--text);
+  }
+
+  .search-button kbd {
+    margin-left: auto;
+  }
+
+  .reading-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--lime);
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left;
+  }
+
+  @media (max-width: 900px) {
+    .header-inner {
+      gap: 24px;
+    }
+
+    .search-button {
+      width: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .header-inner {
+      gap: 16px;
+    }
+
+    .nav {
+      gap: 18px;
+    }
+
+    .nav-link {
+      font-size: 12px;
+    }
+
+    .search-button {
+      justify-content: center;
+      width: 34px;
+      padding: 0;
+      color: var(--muted);
+    }
+
+    .search-button-label,
+    .search-button kbd {
+      display: none;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .nav {
+      gap: 12px;
+    }
+  }
+</style>

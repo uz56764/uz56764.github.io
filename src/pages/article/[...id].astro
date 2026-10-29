@@ -1,0 +1,372 @@
+---
+import { render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import '../../styles/prose.css';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import InfoPanel, { type InfoRow } from '../../components/InfoPanel.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { getPosts, postUrl, readingMinutes, type Post } from '../../lib/posts';
+import { absoluteUrl, displayTitle, formatDate, site, url } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { title, subtitle, description, date, updated, category, tags, language, cover } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter(heading => heading.depth >= 2 && heading.depth <= 4);
+const minutes = readingMinutes(post);
+const socialImage = cover ? (await getImage({ src: cover, width: Math.min(1200, cover.width), format: 'jpg', quality: 85 })).src : undefined;
+
+const facts: InfoRow[] = [
+  { label: 'Author', value: site.fullName, note: `@${site.author}`, href: url('about/') },
+  { label: 'Published', value: formatDate(date) },
+  { label: 'Reading', value: `${minutes} min` },
+  ...(tags.length ? [{ label: 'Tags', value: tags.join(', ') }] : []),
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  dateModified: (updated ?? date).toISOString(),
+  inLanguage: language,
+  keywords: tags.join(', '),
+  url: absoluteUrl(postUrl(post), Astro.site),
+  image: socialImage ? absoluteUrl(socialImage, Astro.site) : undefined,
+  author: { '@type': 'Person', name: site.fullName, alternateName: site.author, url: absoluteUrl(url('about/'), Astro.site) },
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  current="articles"
+  image={socialImage}
+  article={{ published: date, modified: updated, tags }}
+  schema={schema}
+  progress
+>
+  <header class="shell article-header">
+    <a class="back-link" href={url()}>
+      <Icon name="arrow-left" size={14} />
+      All articles
+    </a>
+    <div class="article-heading">
+      <div>
+        <p class="category">{category}</p>
+        <h1 class="article-title">{displayTitle(title)}</h1>
+        <p class="article-dek">{subtitle || description}</p>
+      </div>
+      <InfoPanel class="article-facts" rows={facts} label="Article details" />
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <div class:list={['shell', 'article-layout', { 'has-toc': toc.length > 0 }]}>
+    {toc.length > 0 && <TableOfContents headings={toc} variant="bar" />}
+
+    <article class="prose" lang={language} data-article>
+      <Content />
+    </article>
+
+    {toc.length > 0 && (
+      <aside class="article-aside">
+        <TableOfContents headings={toc} variant="sidebar" />
+      </aside>
+    )}
+
+    <footer class="article-footer">
+      <div class="article-actions">
+        <button class="button" type="button" data-copy-link>
+          <Icon name="link" size={15} />
+          <span data-label>Copy link</span>
+        </button>
+      </div>
+
+      {(newer || older) && (
+        <nav class="pager" aria-label="More articles">
+          {newer && (
+            <a class="pager-link" href={postUrl(newer)} rel="prev">
+              <span class="pager-direction"><Icon name="arrow-left" size={13} /> Newer</span>
+              <span class="pager-title">{displayTitle(newer.data.title)}</span>
+            </a>
+          )}
+          {older && (
+            <a class="pager-link older" href={postUrl(older)} rel="next">
+              <span class="pager-direction">Older <Icon name="arrow-right" size={13} /></span>
+              <span class="pager-title">{displayTitle(older.data.title)}</span>
+            </a>
+          )}
+        </nav>
+      )}
+    </footer>
+  </div>
+
+  <dialog class="lightbox" aria-label="Enlarged image" data-lightbox>
+    <img alt="" data-lightbox-image />
+    <button class="lightbox-close" type="button" aria-label="Close image" data-lightbox-close>
+      <Icon name="close" size={20} />
+    </button>
+  </dialog>
+</Base>
+
+<script>
+  import '../../scripts/article';
+</script>
+
+<style>
+  /* Shared by the header panel and the contents column so they line up. */
+  .article-header,
+  .article-layout {
+    --aside-width: 264px;
+    --aside-gap: clamp(48px, 6vw, 96px);
+  }
+
+  /* Header */
+
+  .article-header {
+    padding-block: clamp(32px, 5vw, 56px) clamp(36px, 5vw, 52px);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    font: 400 12px/1 var(--font-mono);
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+
+  .back-link:hover {
+    color: var(--text);
+  }
+
+  /* Title on the left; the details panel shares the contents column below. */
+  .article-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--aside-width);
+    align-items: start;
+    gap: 32px var(--aside-gap);
+    margin-top: clamp(28px, 4vw, 44px);
+  }
+
+  .article-title {
+    max-width: 20em;
+    margin-top: 16px;
+    font-size: clamp(34px, 4.6vw, 58px);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .article-dek {
+    max-width: 62ch;
+    margin-top: 22px;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* Layout */
+
+  .article-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+
+  .article-layout.has-toc {
+    grid-template-columns: minmax(0, 1fr) var(--aside-width);
+    column-gap: var(--aside-gap);
+  }
+
+  .article-layout > :global(.toc-bar) {
+    display: none;
+  }
+
+  .prose {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .article-aside {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  /* Footer */
+
+  .article-footer {
+    grid-column: 1;
+    display: grid;
+    gap: 24px;
+    margin-top: clamp(56px, 7vw, 88px);
+    padding-top: 24px;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .article-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pager-link {
+    display: grid;
+    gap: 10px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+
+  .pager-link:hover {
+    border-color: var(--line-strong);
+    background: var(--panel);
+  }
+
+  .pager-link.older {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .pager-direction {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 400 12px/1.4 var(--font-mono);
+    color: var(--faint);
+  }
+
+  .older .pager-direction {
+    justify-content: flex-end;
+  }
+
+  .pager-title {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+
+  /* Lightbox */
+
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: clamp(16px, 4vw, 48px);
+    border: 0;
+    background: transparent;
+    cursor: zoom-out;
+  }
+
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(0 0 0 / 0.9);
+  }
+
+  .lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    border: 1px solid var(--line-strong);
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  @media print {
+    .article-heading,
+    .article-layout.has-toc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .back-link,
+    .article-aside,
+    .article-footer,
+    .lightbox,
+    .article-layout > :global(.toc-bar) {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .article-heading,
+    .article-layout.has-toc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .article-heading :global(.article-facts) {
+      max-width: 480px;
+    }
+
+    .article-layout > :global(.toc-bar) {
+      display: block;
+      margin-top: calc(-1 * clamp(40px, 5vw, 64px));
+      margin-bottom: 36px;
+    }
+
+    .article-aside {
+      display: none;
+    }
+
+    :global(:root:has(.toc-bar)) {
+      --subheader-height: 48px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .article-dek {
+      font-size: 16px;
+    }
+
+    .pager {
+      grid-template-columns: 1fr;
+    }
+
+    .pager-link.older {
+      grid-column: auto;
+    }
+  }
+</style>

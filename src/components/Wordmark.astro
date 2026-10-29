@@ -1,0 +1,29 @@
+---
+import Mark from './Mark.astro';
+import { site, url } from '../lib/site';
+---
+
+<a class="wordmark" href={url()} aria-label={`${site.name}, home`}>
+  <Mark size={32} animated />
+  <span>{site.name}</span>
+</a>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-pixel);
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .wordmark {
+      font-size: 20px;
+      gap: 6px;
+    }
+  }
+</style>

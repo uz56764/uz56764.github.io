@@ -1,0 +1,228 @@
+---
+import Icon from './Icon.astro';
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  /** `sidebar` for wide screens, `bar` for the sticky mobile disclosure. */
+  variant: 'sidebar' | 'bar';
+}
+
+const { headings, variant } = Astro.props;
+---
+
+{variant === 'sidebar' ? (
+  <nav class="toc toc-sidebar" aria-labelledby="toc-title">
+    <h2 class="toc-title" id="toc-title">On this page</h2>
+    <ol class="toc-list" role="list">
+      {headings.map(heading => (
+        <li class={`depth-${heading.depth}`}>
+          <a href={`#${heading.slug}`} data-toc-link>{heading.text}</a>
+        </li>
+      ))}
+    </ol>
+    <div class="toc-actions">
+      <button class="toc-action" type="button" data-copy-link>
+        <Icon name="link" size={14} />
+        <span data-label>Copy link</span>
+      </button>
+      <a class="toc-action" href="#top">
+        <Icon name="arrow-up" size={14} />
+        <span>Back to top</span>
+      </a>
+    </div>
+  </nav>
+) : (
+  <details class="toc toc-bar" data-toc-bar>
+    <summary>
+      <span class="toc-bar-label">Contents</span>
+      <span class="toc-bar-current" data-current-section>{headings[0]?.text}</span>
+      <Icon name="chevron-down" size={16} />
+    </summary>
+    <nav class="toc-bar-panel" aria-label="Contents">
+      <ol class="toc-list" role="list">
+        {headings.map(heading => (
+          <li class={`depth-${heading.depth}`}>
+            <a href={`#${heading.slug}`} data-toc-link>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </details>
+)}
+
+<style>
+  .toc-list {
+    display: grid;
+    gap: 1px;
+  }
+
+  .toc-list a {
+    display: block;
+    padding: 6px 0 6px 14px;
+    border-left: 1px solid var(--line-strong);
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--faint);
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .toc-list .depth-3 a {
+    padding-left: 26px;
+    font-size: 13px;
+  }
+
+  .toc-list .depth-4 a {
+    padding-left: 38px;
+    font-size: 12.5px;
+  }
+
+  .toc-list a:hover {
+    border-left-color: var(--muted);
+    color: var(--text);
+  }
+
+  .toc-list a[aria-current] {
+    margin-left: -1px;
+    border-left: 3px solid var(--lime);
+    padding-left: 12px;
+    color: var(--text);
+  }
+
+  .toc-list .depth-3 a[aria-current] {
+    padding-left: 24px;
+  }
+
+  .toc-list .depth-4 a[aria-current] {
+    padding-left: 36px;
+  }
+
+  /* Sidebar */
+
+  .toc-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + 32px);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - var(--header-height) - 64px);
+  }
+
+  .toc-title {
+    padding-bottom: 16px;
+    font: 400 12px/1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .toc-sidebar .toc-list {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(#000, #000 calc(100% - 24px), transparent);
+    padding-bottom: 16px;
+  }
+
+  .toc-actions {
+    display: grid;
+    flex-shrink: 0;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  .toc-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 32px;
+    font-size: 13px;
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+
+  .toc-action:hover {
+    color: var(--text);
+  }
+
+  .toc-action[data-copied] {
+    color: var(--lime);
+  }
+
+  /* Mobile bar */
+
+  .toc-bar {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 20;
+    margin-inline: calc(-1 * var(--gutter));
+    border-bottom: 1px solid var(--line);
+    background: rgb(5 6 7 / 0.94);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .toc-bar summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 46px;
+    padding-inline: var(--gutter);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .toc-bar summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .toc-bar-label {
+    font: 400 11px/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .toc-bar-current {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .toc-bar summary :global(svg) {
+    color: var(--muted);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .toc-bar[open] summary :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  .toc-bar-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: min(64dvh, 520px);
+    padding: 14px var(--gutter) 20px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-bottom: 1px solid var(--line-strong);
+    background: var(--bg);
+    box-shadow: 0 24px 48px rgb(0 0 0 / 0.7);
+  }
+
+  .toc-bar .toc-list a {
+    padding-block: 8px;
+    font-size: 15px;
+  }
+
+  .toc-bar .toc-list .depth-3 a,
+  .toc-bar .toc-list .depth-4 a {
+    font-size: 14px;
+  }
+</style>

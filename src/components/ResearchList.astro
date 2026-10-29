@@ -1,0 +1,284 @@
+---
+import Icon from './Icon.astro';
+import type { Reward, ResearchTarget } from '../data/profile';
+import { formatMoney } from '../lib/site';
+
+interface Props {
+  targets: ResearchTarget[];
+}
+
+const { targets } = Astro.props;
+
+const rewardText = (reward: Reward) => (reward === null ? '$-' : formatMoney(reward));
+
+// Tracker links are shown by their issue number, e.g. #559115426.
+const linkLabel = (href: string) => {
+  const id = href.match(/(\d+)\/?$/)?.[1];
+  return id ? `#${id}` : new URL(href).hostname;
+};
+---
+
+{/* Rewards share one right-hand column: per finding, or once per target when combined. */}
+<ul class="research" role="list">
+  {targets.map(target => (
+    <li class="target">
+      <div class="target-head">
+        <h3 class="target-name">{target.name}</h3>
+        {target.reward !== undefined && (
+          <p class="target-reward">
+            <span class="reward-label">Total</span>
+            <span class:list={['reward', { unset: target.reward === null }]}>{rewardText(target.reward)}</span>
+          </p>
+        )}
+      </div>
+      <ul class="findings" role="list">
+        {target.findings.map(finding => {
+          const count = finding.count ?? finding.links?.length ?? 1;
+          const hasMeta = finding.links?.length || finding.program;
+          return (
+            <li class:list={['finding', { highlight: finding.highlight }]}>
+              <div class="finding-body">
+                <p class="finding-title">
+                  {finding.cves?.map(cve => <span class="finding-cve">{cve}</span>)}
+                  {finding.title}
+                  {count > 1 && (
+                    <span class="finding-count">
+                      <span aria-hidden="true">×{count}</span>
+                      <span class="sr-only">, {count} reports</span>
+                    </span>
+                  )}
+                </p>
+                {hasMeta && (
+                  <p class="finding-meta">
+                    {finding.links?.map(href => (
+                      <a class="finding-link" href={href} target="_blank" rel="noopener">
+                        {linkLabel(href)}
+                        <Icon name="arrow-up-right" size={11} />
+                      </a>
+                    ))}
+                    {finding.program && <span class="finding-program">{finding.program}</span>}
+                  </p>
+                )}
+              </div>
+              {finding.reward !== undefined && (
+                <span class:list={['reward', { unset: finding.reward === null }]}>{rewardText(finding.reward)}</span>
+              )}
+            </li>
+          );
+        })}
+        {target.more && <li class="finding finding-more">Other reports</li>}
+      </ul>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .research {
+    display: grid;
+    gap: 40px;
+  }
+
+  .target-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .target-name {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+  }
+
+  .target-reward {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .target-reward .reward {
+    font-size: 17px;
+  }
+
+  .reward-label {
+    font: 400 11px/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .reward {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  .reward.unset {
+    color: var(--text-body);
+  }
+
+  /* Bullet, finding, reward. The bullet is an empty grid item, so it sits on
+     the title's baseline. Every row keeps full contrast and a visible bullet;
+     a headline result is set apart by shape and weight, so the other rows
+     never read as switched off. */
+  .finding {
+    display: grid;
+    grid-template-columns: 9px minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 14px;
+    padding-block: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .finding::before {
+    content: '';
+    justify-self: center;
+    width: 5px;
+    height: 5px;
+    margin-bottom: 1px;
+    background: var(--faint);
+  }
+
+  .finding-title {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .finding-count {
+    margin-left: 8px;
+    font: 400 12px/1 var(--font-mono);
+    color: var(--muted);
+  }
+
+  .finding-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 14px;
+    margin-top: 5px;
+    font: 400 12px/1.5 var(--font-mono);
+    letter-spacing: 0.02em;
+    color: var(--faint);
+  }
+
+  /* The CVE leads the title as its identifier. */
+  .finding-cve {
+    margin-right: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .finding-program {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .finding-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    transition: color 0.15s;
+  }
+
+  .finding-link:hover {
+    color: var(--lime);
+  }
+
+  /* A diamond in the accent colour: a different mark, not a brighter one. */
+  .highlight::before {
+    width: 7px;
+    height: 7px;
+    margin-bottom: 2px;
+    background: var(--lime);
+    transform: rotate(45deg);
+  }
+
+  .highlight .finding-title {
+    font-weight: 500;
+  }
+
+  /* Only a headline amount is set large; titles stay the size of the rest. */
+  .highlight .reward:not(.unset) {
+    font-size: 22px;
+    letter-spacing: -0.03em;
+    color: var(--lime);
+  }
+
+  .finding-more::before {
+    visibility: hidden;
+  }
+
+  .finding-more {
+    padding-block: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--faint);
+  }
+
+  @media print {
+    .research {
+      gap: 10px;
+    }
+
+    .target {
+      break-inside: avoid;
+    }
+
+    .target-head {
+      padding-bottom: 2px;
+    }
+
+    .target-name {
+      font-size: 12px;
+    }
+
+    .finding {
+      column-gap: 10px;
+      padding-block: 3px;
+      border-bottom: 0;
+    }
+
+    .finding-title,
+    .finding-more {
+      font-size: 11px;
+    }
+
+    .finding-meta {
+      margin-top: 0;
+    }
+
+    .finding-meta,
+    .finding-program,
+    .finding-count,
+    .reward,
+    .target-reward .reward {
+      font-size: 10px;
+    }
+
+    .highlight .reward:not(.unset) {
+      font-size: 12px;
+    }
+
+    .reward-label {
+      font-size: 9px;
+    }
+
+    .finding-link :global(svg) {
+      display: none;
+    }
+  }
+</style>

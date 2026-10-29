@@ -1,0 +1,99 @@
+---
+import Icon from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import { site, url } from '../lib/site';
+
+const links = [
+  { label: 'Articles', href: url(), external: false },
+  { label: 'About Me', href: url('about/'), external: false },
+  { label: 'RSS', href: url('rss.xml'), external: false },
+  ...site.links.map(link => ({ ...link, external: true })),
+];
+---
+
+<footer class="site-footer">
+  <div class="divider"></div>
+  <div class="shell footer-main">
+    <div class="footer-brand">
+      <Wordmark />
+      <p>{site.fullName} · {site.role}</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      {links.map(link => (
+        <a href={link.href} rel={link.external ? 'me noopener' : undefined} target={link.external ? '_blank' : undefined}>
+          {link.label}
+          {link.external && <Icon name="arrow-up-right" size={12} />}
+        </a>
+      ))}
+    </nav>
+  </div>
+  <div class="shell footer-meta">
+    <span>© {new Date().getFullYear()} {site.fullName}</span>
+    <a href="#top">Back to top <Icon name="arrow-up" size={12} /></a>
+  </div>
+</footer>
+
+<style>
+  .footer-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px 64px;
+    padding-block: 44px 48px;
+  }
+
+  .footer-brand p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--faint);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+  }
+
+  .footer-nav a,
+  .footer-meta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    font: 400 13px/1 var(--font-mono);
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+
+  .footer-nav a:hover,
+  .footer-meta a:hover {
+    color: var(--text);
+  }
+
+  .footer-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 14px 32px;
+    border-top: 1px solid var(--line);
+    font: 400 12px/1.5 var(--font-mono);
+    color: var(--faint);
+  }
+
+  .footer-meta a {
+    font-size: 12px;
+    color: var(--faint);
+  }
+
+  @media (max-width: 640px) {
+    .footer-main {
+      padding-block: 36px 40px;
+    }
+
+    .footer-nav {
+      gap: 4px 20px;
+    }
+  }
+</style>

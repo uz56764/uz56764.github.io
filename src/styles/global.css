@@ -1,0 +1,456 @@
+/* ---------------------------------------------------------------------------
+   Fonts
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: Geist;
+  src: url('../assets/fonts/Geist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Geist;
+  src: url('../assets/fonts/Geist-Medium.woff2') format('woff2');
+  font-weight: 500 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('../assets/fonts/GeistMono-Regular.woff2') format('woff2');
+  font-weight: 400 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('../assets/fonts/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+/* Hangul only, so Latin-only pages never download the 2 MB file. */
+@font-face {
+  font-family: Pretendard;
+  src: url('../assets/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3000-303F, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF, U+FF00-FFEF;
+}
+
+/* ---------------------------------------------------------------------------
+   Tokens
+   --------------------------------------------------------------------------- */
+
+:root {
+  --bg: #050607;
+  --panel: #0b0c0d;
+  --panel-raised: #111314;
+  --code-bg: #08090a;
+
+  --line: #1d2023;
+  --line-strong: #2a2e32;
+  --guide: #1f2326;
+
+  --text: #eef1f2;
+  --text-body: #c3c8cb;
+  --muted: #9ba1a5;
+  --faint: #7a8085;
+
+  /* Accent: reserved for the logo, current-location markers, the primary
+     action and links. */
+  --lime: #cdff00;
+  --lime-hover: #dcff4d;
+  --lime-ink: #0b1000;
+  --lime-line: rgb(205 255 0 / 0.45);
+
+  /* Contest placings. Muted metals, so they read as medals rather than
+     as more accents. */
+  --gold: #e4c050;
+  --silver: #a0b3c9;
+  --bronze: #c47d4d;
+
+  --font-sans: Geist, Pretendard, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-pixel: 'Geist Pixel', 'Geist Mono', ui-monospace, monospace;
+
+  --content: 1200px;
+  --gutter: clamp(20px, 4.5vw, 56px);
+  --frame-inset: 32px;
+  --header-height: 64px;
+  /* Height of sticky UI below the header (the mobile contents bar). */
+  --subheader-height: 0px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + var(--subheader-height) + 24px);
+  scrollbar-color: var(--line-strong) var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* A faint light from above. */
+  background: radial-gradient(ellipse 60% 320px at 50% -120px, rgb(205 255 0 / 0.07), transparent 70%) no-repeat;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+:where(h1, h2, h3, h4, p, figure, blockquote, dl, dd, ol, ul) {
+  margin: 0;
+}
+
+:where(ol, ul)[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.22em;
+}
+
+:where(button, input) {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+:where(a, button, input, summary) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+svg {
+  flex-shrink: 0;
+}
+
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--line-strong);
+  font: 400 11px/1 var(--font-mono);
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Page structure
+   --------------------------------------------------------------------------- */
+
+.shell {
+  width: min(var(--content), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+/* Faint dashed guides framing the content column. */
+.frame {
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  padding-bottom: clamp(80px, 10vw, 128px);
+}
+
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc((100% - min(100% - 2 * var(--gutter), var(--content))) / 2 - var(--frame-inset));
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--guide) 50%, transparent 0) left top / 1px 8px repeat-y,
+    linear-gradient(var(--guide) 50%, transparent 0) right top / 1px 8px repeat-y;
+}
+
+/* Full-bleed dashed rule between major regions. */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--guide) 50%, transparent 0) left / 8px 1px repeat-x;
+}
+
+/* ---------------------------------------------------------------------------
+   Shared components
+   --------------------------------------------------------------------------- */
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 12px;
+  padding: 10px 16px;
+  background: var(--lime);
+  color: var(--lime-ink);
+  font: 400 13px/1 var(--font-mono);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Small monospace caption above titles and sections. */
+.eyebrow {
+  font: 400 12px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.display {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  font-size: clamp(56px, 7.4vw, 104px);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.lede {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Post category, set in the accent colour. */
+.category {
+  font: 400 12px/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  font: 400 12px/1.5 var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line-strong);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.button:hover {
+  border-color: var(--muted);
+  background: var(--panel);
+}
+
+.button-primary {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.button-primary:hover {
+  border-color: var(--lime-hover);
+  background: var(--lime-hover);
+}
+
+.button[data-copied] {
+  border-color: var(--lime-line);
+  color: var(--lime);
+}
+
+/* Inline action: label with an arrow that nudges on hover. */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  font-size: 14px;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.text-link:hover {
+  color: var(--text);
+}
+
+.text-link svg {
+  transition: transform 0.2s var(--ease);
+}
+
+.text-link:hover svg:last-child {
+  transform: translateX(3px);
+}
+
+/* Whole-card links: the title link stretches over its positioned container. */
+.stretched-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+@media (max-width: 1080px) {
+  .frame::before {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-height: 56px;
+  }
+
+  .lede {
+    font-size: 16px;
+  }
+}
+
+@media print {
+  :root {
+    --bg: #fff;
+    --panel: #fff;
+    --panel-raised: #f4f4f4;
+    --code-bg: #f6f6f6;
+    --line: #ddd;
+    --line-strong: #c8c8c8;
+    --text: #111;
+    --text-body: #222;
+    --muted: #444;
+    --faint: #666;
+    --lime: #3b5200;
+    --lime-line: #8aa040;
+    --gold: #8a6400;
+    --silver: #5b6672;
+    --bronze: #8e4d20;
+    color-scheme: light;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .skip-link,
+  .site-header,
+  .site-footer,
+  .search,
+  .divider,
+  .frame::before {
+    display: none !important;
+  }
+
+  .frame {
+    padding-bottom: 0;
+  }
+
+  .shell {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

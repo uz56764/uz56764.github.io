@@ -1,0 +1,97 @@
+---
+import Icon from './Icon.astro';
+
+// The reference column beside a page title: plain facts about the page,
+// always in the same form (blog on Home, article on Article, person on About).
+
+export interface InfoRow {
+  label: string;
+  value: string;
+  /** Secondary text shown after the value, e.g. a handle. */
+  note?: string;
+  href?: string;
+  external?: boolean;
+}
+
+interface Props {
+  rows: InfoRow[];
+  label: string;
+  class?: string;
+}
+
+const { rows, label, class: className } = Astro.props;
+---
+
+<dl class:list={['info-panel', className]} aria-label={label}>
+  {rows.map(row => (
+    <div class="info-row">
+      <dt>{row.label}</dt>
+      <dd>
+        {row.href ? (
+          <a href={row.href} target={row.external ? '_blank' : undefined} rel={row.external ? 'noopener' : undefined}>
+            {row.value}
+            {row.external && <Icon name="arrow-up-right" size={12} />}
+          </a>
+        ) : (
+          row.value
+        )}
+        {row.note && <span class="info-note">{row.note}</span>}
+      </dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  /* A ruled list rather than a card: it shares the page's hairlines instead
+     of sitting on top of them. */
+  .info-panel {
+    border-block: 1px solid var(--line-strong);
+  }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 11px;
+  }
+
+  .info-row + .info-row {
+    border-top: 1px solid var(--line);
+  }
+
+  dt {
+    font: 400 11px/1.6 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  dd {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+
+  dd a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.25em;
+    transition: color 0.15s, text-decoration-color 0.15s;
+  }
+
+  dd a:hover {
+    color: var(--lime);
+    text-decoration-color: var(--lime-line);
+  }
+
+  .info-note {
+    margin-left: 8px;
+    font: 400 12px/1 var(--font-mono);
+    color: var(--faint);
+  }
+</style>

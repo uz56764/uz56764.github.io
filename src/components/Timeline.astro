@@ -1,0 +1,131 @@
+---
+import type { TimelineEntry } from '../data/profile';
+
+interface Props {
+  entries: TimelineEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<ol class="timeline" role="list">
+  {entries.map(entry => (
+    <li class="timeline-entry">
+      <span class="timeline-period">{entry.period}</span>
+      <div class="timeline-body">
+        <h3 class="timeline-title">{entry.title}</h3>
+        <p class="timeline-org">{entry.organization}</p>
+        {entry.summary && <p class="timeline-summary">{entry.summary}</p>}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .timeline-entry {
+    display: grid;
+    grid-template-columns: 148px minmax(0, 1fr);
+    gap: 8px 32px;
+  }
+
+  .timeline-period {
+    padding-top: 4px;
+    font: 400 12px/1.5 var(--font-mono);
+    color: var(--faint);
+    white-space: nowrap;
+  }
+
+  /* The rail runs through every entry; the square marks each start. */
+  .timeline-body {
+    position: relative;
+    padding: 0 0 32px 24px;
+    border-left: 1px solid var(--line-strong);
+  }
+
+  .timeline-entry:last-child .timeline-body {
+    padding-bottom: 0;
+  }
+
+  .timeline-body::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: -4px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--muted);
+    background: var(--bg);
+  }
+
+  .timeline-entry:first-child .timeline-body::before {
+    border-color: var(--lime);
+    background: var(--lime);
+  }
+
+  .timeline-title {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+  }
+
+  .timeline-org {
+    margin-top: 2px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .timeline-summary {
+    max-width: 62ch;
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-body);
+  }
+
+  @media print {
+    .timeline-entry {
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 4px 16px;
+      break-inside: avoid;
+    }
+
+    .timeline-body {
+      padding-bottom: 7px;
+    }
+
+    .timeline-title {
+      font-size: 12.5px;
+    }
+
+    .timeline-org,
+    .timeline-summary {
+      font-size: 11px;
+    }
+
+    .timeline-summary {
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .timeline-period {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .timeline-entry {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .timeline-period {
+      padding: 0 0 6px 25px;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .timeline-entry:first-child .timeline-period {
+      border-left-color: transparent;
+    }
+  }
+</style>

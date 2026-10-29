@@ -1,0 +1,501 @@
+/* Article body. Markdown output is unscoped, so these rules are global. */
+
+.prose {
+  --measure: 70ch;
+  --flow: 1.3em;
+  font-size: 17px;
+  line-height: 1.78;
+  letter-spacing: -0.005em;
+  color: var(--text-body);
+  overflow-wrap: break-word;
+}
+
+.prose:lang(ko) {
+  line-height: 1.85;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+}
+
+.prose > * + *,
+.prose :is(blockquote, li) > * + * {
+  margin-top: var(--flow);
+}
+
+.prose :is(p, ul, ol, blockquote, h2, h3, h4) {
+  max-width: var(--measure);
+}
+
+/* Headings ----------------------------------------------------------------- */
+
+.prose :is(h2, h3, h4) {
+  position: relative;
+  color: var(--text);
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.prose h2 {
+  margin-top: 3.2em;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--line);
+  font-size: 28px;
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+}
+
+.prose > h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.prose h3 {
+  margin-top: 2.4em;
+  font-size: 21px;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+
+.prose h4 {
+  margin-top: 2em;
+  font-size: 18px;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+}
+
+.prose :is(h2, h3, h4) + * {
+  margin-top: 0.85em;
+}
+
+.prose :is(h2, h3, h4):focus {
+  outline: none;
+}
+
+.heading-anchor {
+  position: absolute;
+  bottom: 0;
+  left: -1.1em;
+  width: 1.1em;
+  color: var(--faint);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.prose h2 > .heading-anchor {
+  bottom: auto;
+}
+
+.heading-anchor::before {
+  content: '#';
+}
+
+.prose :is(h2, h3, h4):hover > .heading-anchor {
+  opacity: 1;
+}
+
+.heading-anchor:hover {
+  color: var(--lime);
+}
+
+/* Inline ------------------------------------------------------------------- */
+
+.prose strong {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.prose a:not(.heading-anchor) {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--lime-line);
+  text-decoration-thickness: 1px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+
+.prose a:not(.heading-anchor):hover {
+  color: var(--lime);
+  text-decoration-color: var(--lime);
+}
+
+.prose :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--line);
+  background: var(--panel-raised);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: #e4e8ea;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Lists -------------------------------------------------------------------- */
+
+.prose :is(ul, ol) {
+  padding-left: 1.4em;
+}
+
+.prose li + li {
+  margin-top: 0.45em;
+}
+
+.prose ul > li {
+  list-style: square;
+}
+
+.prose li::marker {
+  color: var(--faint);
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/* Blockquotes — imported posts use them as asides and source citations. -- */
+
+.prose blockquote {
+  padding: 2px 0 2px 20px;
+  border-left: 2px solid var(--lime-line);
+}
+
+.prose blockquote > :is(ul, ol) {
+  padding-left: 1.2em;
+}
+
+/* Media -------------------------------------------------------------------- */
+
+/* Paragraphs holding only an image become a framed plate. */
+.prose p:has(> :is(img, .zoomable):only-child) {
+  display: flex;
+  justify-content: center;
+  max-width: none;
+  margin-block: 2em;
+  padding: clamp(10px, 2vw, 20px);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+/* Only images scaled down to the column become zoomable, so the wrapper
+   takes the full width without changing the layout. */
+.prose .zoomable {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+.prose hr {
+  height: 1px;
+  margin-block: 3em;
+  border: 0;
+  background: var(--line);
+}
+
+.prose .table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line-strong);
+  scrollbar-width: thin;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.prose th {
+  background: var(--panel-raised);
+  color: var(--text);
+  font-weight: 500;
+  text-align: left;
+}
+
+.prose :is(th, td) {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.prose tr:last-child td {
+  border-bottom: 0;
+}
+
+.prose .footnotes {
+  margin-top: 4em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.prose sup a {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  text-decoration: none;
+}
+
+/* Code blocks -------------------------------------------------------------- */
+
+/* A familiar, low-glare palette: researchers read a lot of code here. */
+.astro-code {
+  --astro-code-foreground: #d5dadd;
+  --astro-code-background: var(--code-bg);
+  --astro-code-token-comment: #82898e;
+  --astro-code-token-keyword: #ff8f7e;
+  --astro-code-token-string: #a8d1ff;
+  --astro-code-token-string-expression: #a8d1ff;
+  --astro-code-token-constant: #7cc4ff;
+  --astro-code-token-function: #d7b4ff;
+  --astro-code-token-parameter: #ffb36b;
+  --astro-code-token-punctuation: #a0a7ab;
+  --astro-code-token-link: var(--lime);
+  --astro-code-token-inserted: #8fd88a;
+  --astro-code-token-deleted: #ff8f7e;
+  --astro-code-token-changed: #ffb36b;
+}
+
+.code-block {
+  --code-pad: 18px;
+  position: relative;
+  border: 1px solid var(--line-strong);
+  background: var(--code-bg);
+  overflow: clip;
+}
+
+.prose > .code-block {
+  max-width: none;
+}
+
+.code-block-header {
+  position: sticky;
+  top: calc(var(--header-height) + var(--subheader-height));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 36px;
+  padding: 0 4px 0 var(--code-pad);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.code-block-language {
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0 10px;
+  font: 400 12px/1 var(--font-mono);
+  color: var(--muted);
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.code-copy:hover {
+  background: var(--panel-raised);
+  color: var(--text);
+}
+
+.code-copy svg:nth-of-type(2),
+.code-copy[data-copied] svg:first-of-type {
+  display: none;
+}
+
+.code-copy[data-copied] {
+  color: var(--lime);
+}
+
+.code-copy[data-copied] svg:nth-of-type(2) {
+  display: block;
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 16px 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  tab-size: 4;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.code-block pre:focus-visible {
+  outline-offset: -2px;
+}
+
+.code-block code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  padding-inline: var(--code-pad);
+}
+
+.code-block .line:is(.diff-add, .diff-remove) {
+  display: inline-block;
+  width: calc(100% + 2 * var(--code-pad));
+  margin-inline: calc(-1 * var(--code-pad));
+  padding-inline: calc(var(--code-pad) - 2px) var(--code-pad);
+  border-left: 2px solid;
+}
+
+.code-block .line.diff-add {
+  border-color: #5fb35a;
+  background: rgb(95 179 90 / 0.1);
+}
+
+.code-block .line.diff-remove {
+  border-color: #e0685a;
+  background: rgb(224 104 90 / 0.1);
+}
+
+.code-expand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  font: 400 12px/1 var(--font-mono);
+  color: var(--muted);
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.code-expand:hover {
+  background: var(--panel-raised);
+  color: var(--text);
+}
+
+.code-expand[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+/* Long listings show a preview until expanded (only when scripts can expand them). */
+.js .code-block[data-collapsible]:not([data-expanded]) pre {
+  max-height: calc(24 * 1.7em + 16px);
+  overflow-y: hidden;
+}
+
+.js .code-block[data-collapsible]:not([data-expanded]) .code-expand::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: linear-gradient(transparent, var(--code-bg));
+  pointer-events: none;
+}
+
+.code-block[data-collapsible] .code-expand {
+  display: none;
+}
+
+.js .code-block[data-collapsible] .code-expand {
+  display: flex;
+}
+
+/* Print: show every listing in full, in ink-friendly colours. ------------- */
+
+@media print {
+  .astro-code {
+    --astro-code-foreground: #1d1d1d;
+    --astro-code-token-comment: #666;
+    --astro-code-token-keyword: #a33a2c;
+    --astro-code-token-string: #1d5a96;
+    --astro-code-token-string-expression: #1d5a96;
+    --astro-code-token-constant: #1d5a96;
+    --astro-code-token-function: #6a3aa8;
+    --astro-code-token-parameter: #8a4b00;
+    --astro-code-token-punctuation: #555;
+  }
+
+  .code-block pre {
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap;
+    font-size: 10px;
+  }
+
+  .code-block code {
+    width: auto;
+  }
+
+  .code-block-header {
+    position: static;
+  }
+
+  .code-copy,
+  .code-expand,
+  .heading-anchor {
+    display: none !important;
+  }
+
+  .prose {
+    font-size: 12px;
+  }
+}
+
+/* Small screens ------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .prose {
+    --flow: 1.2em;
+    font-size: 16px;
+  }
+
+  .prose h2 {
+    margin-top: 2.8em;
+    font-size: 24px;
+  }
+
+  .prose h3 {
+    font-size: 19px;
+  }
+
+  .prose h4 {
+    font-size: 17px;
+  }
+
+  .heading-anchor {
+    display: none;
+  }
+
+  .code-block {
+    --code-pad: 14px;
+    margin-inline: calc(-1 * var(--gutter));
+    border-inline: 0;
+  }
+
+  .code-block pre {
+    font-size: 12.5px;
+  }
+
+  .prose blockquote {
+    padding-left: 16px;
+  }
+
+  .prose blockquote .code-block {
+    margin-inline: 0;
+    border-inline: 1px solid var(--line-strong);
+  }
+
+  .prose p:has(> :is(img, .zoomable):only-child) {
+    margin-inline: calc(-1 * var(--gutter));
+    border-inline: 0;
+  }
+}
