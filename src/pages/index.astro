@@ -49,8 +49,6 @@ const photo = Object.values(photos)[0]?.default;
         <span class="portrait-placeholder" aria-hidden="true"><Mark size={48} /></span>
       )}
     </figure>
-    {/* The CV's corner mark, in place of the photo. */}
-    <Mark class="cv-mark" size={48} />
   </section>
 
   <div class="divider"></div>
@@ -189,8 +187,7 @@ const photo = Object.values(photos)[0]?.default;
     color: var(--faint);
   }
 
-  .about-contact,
-  .about-hero :global(.cv-mark) {
+  .about-contact {
     display: none;
   }
 
@@ -453,9 +450,9 @@ const photo = Object.values(photos)[0]?.default;
 
   /* Printable CV (public/jinu-kim-cv.pdf is rendered from this). The page's
      details carry over: pixel headings, mono figures, the bullets, rail and
-     medal colours. Paper drops the photo, the amounts and the summary (the
-     introduction opens with the same line), and sets everything on a tighter
-     scale. A4 is narrower than the 900px breakpoint, so the columns are
+     medal colours, and the photo (src/assets/profile.*) in the header. Paper
+     drops the amounts and the summary (the introduction opens with the same
+     line), and sets everything on a tighter scale. A4 is narrower than the 900px breakpoint, so the columns are
      restated here. */
   @page {
     size: A4;
@@ -481,30 +478,13 @@ const photo = Object.values(photos)[0]?.default;
       border-bottom: 1px solid var(--line);
     }
 
-    .portrait,
     .about-summary {
       display: none;
     }
 
-    /* The site mark in its light-background colours, as in the favicon. */
-    .about-hero :global(.cv-mark) {
-      display: block;
-    }
-
-    .about-hero :global(.cv-mark .body) {
-      fill: #6b8a00;
-    }
-
-    .about-hero :global(.cv-mark .shade) {
-      fill: #4a6000;
-    }
-
-    .about-hero :global(.cv-mark .light) {
-      fill: #fff;
-    }
-
-    .about-hero :global(.cv-mark .dark) {
-      fill: #050607;
+    .portrait {
+      grid-row: auto;
+      width: 84px;
     }
 
     .about-name {
