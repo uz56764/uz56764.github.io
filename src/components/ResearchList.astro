@@ -229,9 +229,11 @@ const linkLabel = (href: string) => {
     color: var(--faint);
   }
 
+  /* On paper: the same bullets and diamonds on a tighter grid, each finding
+     on one line with its references, and no rules or amounts. */
   @media print {
     .research {
-      gap: 10px;
+      gap: 9px;
     }
 
     .target {
@@ -239,33 +241,13 @@ const linkLabel = (href: string) => {
     }
 
     .target-head {
-      padding-bottom: 2px;
+      padding-bottom: 1px;
+      border-bottom: 0;
     }
 
     .target-name {
       font-size: 11.5px;
-    }
-
-    .finding {
-      column-gap: 10px;
-      padding-block: 3px;
-      border-bottom: 0;
-    }
-
-    .finding-title,
-    .finding-more {
-      font-size: 11px;
-    }
-
-    .finding-meta {
-      margin-top: 0;
-    }
-
-    .finding-meta,
-    .finding-program,
-    .finding-count,
-    .finding-cve {
-      font-size: 9.5px;
+      line-height: 1.55;
       letter-spacing: 0;
     }
 
@@ -275,8 +257,75 @@ const linkLabel = (href: string) => {
       display: none;
     }
 
+    .finding {
+      grid-template-columns: 7px minmax(0, 1fr);
+      column-gap: 9px;
+      padding-block: 0;
+      border-bottom: 0;
+    }
+
+    .finding::before {
+      width: 4px;
+      height: 4px;
+      margin-bottom: 1px;
+    }
+
+    .highlight::before {
+      width: 5px;
+      height: 5px;
+      margin-bottom: 1px;
+    }
+
+    .finding-body {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 10px;
+    }
+
+    /* The CVE follows the title here, beside the other references. */
+    .finding-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 6px;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .finding-cve {
+      order: 1;
+      margin-right: 0;
+    }
+
+    .finding-count {
+      margin-left: 0;
+    }
+
+    .finding-meta {
+      gap: 0 10px;
+      margin-top: 0;
+      line-height: 1.6;
+    }
+
+    .finding-meta,
+    .finding-cve,
+    .finding-count {
+      font-size: 9.5px;
+    }
+
+    .finding-program {
+      font-size: 10px;
+    }
+
     .finding-link :global(svg) {
       display: none;
+    }
+
+    .finding-more {
+      padding-block: 0;
+      font-size: 10px;
+      line-height: 1.6;
     }
   }
 </style>
