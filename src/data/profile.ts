@@ -12,6 +12,9 @@ export interface TimelineEntry {
 /** A bounty in USD, or null while the amount is not set (shown as $-). */
 export type Reward = number | null;
 
+/** A public tracker entry, with the CVE it was assigned when there is one. */
+export type TrackerLink = string | { href: string; cve: string };
+
 export interface Finding {
   title: string;
   /** Separate reports of the same kind. Defaults to the number of links. */
@@ -19,7 +22,7 @@ export interface Finding {
   /** Shown in front of the title. */
   cves?: string[];
   /** Public tracker entries. */
-  links?: string[];
+  links?: TrackerLink[];
   /** How it was submitted, e.g. 'kvmCTF Full VM Escape'. Shown after the links. */
   program?: string;
   reward?: Reward;
@@ -97,7 +100,11 @@ export const profile = {
           title: 'V8 Heap Sandbox Escape',
           links: ['https://issuetracker.google.com/issues/488927521', 'https://issuetracker.google.com/issues/560771373'],
         },
-        { title: 'Blink', program: 'v8CTF 0day submission', links: ['https://issuetracker.google.com/issues/573335176'] },
+        {
+          title: 'Blink',
+          program: 'v8CTF 0day submission',
+          links: [{ href: 'https://issuetracker.google.com/issues/573335176', cve: 'CVE-2026-126865' }],
+        },
       ],
       more: true,
     },
@@ -105,7 +112,7 @@ export const profile = {
       name: 'Linux KVM',
       findings: [
         { title: 'VM Escape', program: 'kvmCTF Full VM Escape', cves: ['CVE-2026-99082'], reward: null, highlight: true },
-        { title: 'Guest to Host Panic', program: 'kvmCTF Host Panic', cves: ['CVE-2026-98164'], reward: null },
+        { title: 'Guest to Host Panic', program: 'kvmCTF Host Panic', cves: ['CVE-2026-98164'], reward: 20_000 },
       ],
     },
     {
