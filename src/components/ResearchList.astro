@@ -104,10 +104,6 @@ const trackerLink = (link: TrackerLink) => {
     gap: 12px;
   }
 
-  .target-reward .reward {
-    font-size: 17px;
-  }
-
   .reward-label {
     font: 400 11px/1 var(--font-mono);
     letter-spacing: 0.08em;
@@ -115,8 +111,9 @@ const trackerLink = (link: TrackerLink) => {
     color: var(--faint);
   }
 
+  /* Per-finding amounts match a target's total; only a headline is larger. */
   .reward {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 500;
     line-height: 1.4;
     font-variant-numeric: tabular-nums;
